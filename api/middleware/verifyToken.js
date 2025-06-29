@@ -16,7 +16,7 @@ const verifyToken = (req, res, next) => {
   try {
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET || "supersecretkey"
+      "supersecretkey" || process.env.JWT_SECRET
     );
     req.userId = decoded.id;
     next();

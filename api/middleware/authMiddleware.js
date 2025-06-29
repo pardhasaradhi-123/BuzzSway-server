@@ -15,7 +15,7 @@ const authMiddleware = (req, res, next) => {
     // Verify token (replace 'your_jwt_secret' with your actual secret)
     const decoded = jwt.verify(
       token,
-      process.env.JWT_SECRET || "supersecretkey"
+      "supersecretkey" || process.env.JWT_SECRET
     );
 
     // Attach user ID to request object

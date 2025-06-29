@@ -18,7 +18,7 @@ const registerUser = async (req, res) => {
     // ✅ Create token here too
     const token = jwt.sign(
       { id: user._id },
-      process.env.JWT_SECRET || "supersecretkey",
+      "supersecretkey" || process.env.JWT_SECRET,
       {
         expiresIn: "7d",
       }
@@ -54,7 +54,7 @@ const loginUser = async (req, res) => {
 
     const token = jwt.sign(
       { id: user._id },
-      process.env.JWT_SECRET || "supersecretkey",
+      "supersecretkey" || process.env.JWT_SECRET,
       {
         expiresIn: "7d",
       }
