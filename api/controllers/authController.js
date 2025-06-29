@@ -20,13 +20,12 @@ const registerUser = async (req, res) => {
       expiresIn: "7d",
     });
 
-    // ✅ Set token as HTTP-only cookie
     res
       .cookie("token", token, {
-        httpOnly: false,
-        secure: true, // set to true if using https
-        sameSite: "Lax", // or "None" for cross-site
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true, // ✅ secure: JS can't read this cookie
+        secure: true, // ✅ only sends over HTTPS
+        sameSite: "None", // ✅ required for cross-site cookies (Netlify + Railway)
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       })
       .status(201)
       .json({
@@ -53,14 +52,14 @@ const loginUser = async (req, res) => {
       expiresIn: "7d",
     });
 
-    // ✅ Set token as HTTP-only cookie
     res
       .cookie("token", token, {
-        httpOnly: true,
-        secure: false, // true if using HTTPS
-        sameSite: "Lax", // or "None" if frontend on different domain
+        httpOnly: true, // ✅ secure: JS can't read this cookie
+        secure: true, // ✅ only sends over HTTPS
+        sameSite: "None", // ✅ required for cross-site cookies (Netlify + Railway)
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       })
+
       .status(200)
       .json({ user: { id: user._id, username: user.username } }); // optional token here
   } catch (error) {
