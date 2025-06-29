@@ -6,7 +6,7 @@ const connectDB = require("./config/db");
 const initializeSocket = require("./socket");
 const cookieParser = require("cookie-parser");
 
-// Load environment variables
+// Load env variables
 dotenv.config();
 
 // Connect to MongoDB
@@ -16,15 +16,16 @@ connectDB();
 const app = express();
 const server = http.createServer(app);
 
-// ✅ CORS Configuration (Fix for credentials)
+// CORS config
 app.use(cookieParser());
-const corsOptions = {
-  origin: process.env.CLIENT_URL, // your frontend origin
-  credentials: true, // allow credentials (cookies, auth headers)
-};
-app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL, // ✅ Use Netlify origin from .env
+    credentials: true,
+  })
+);
 
-// Middlewares
+// Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -32,7 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 const authRoutes = require("./api/routes/authRoutes");
 const messageRoutes = require("./api/routes/messageRoutes");
 const userRoutes = require("./api/routes/userRoutes");
-const postRoutes = require("./api/routes/postRoutes"); // if needed later
+const postRoutes = require("./api/routes/postRoutes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
@@ -41,7 +42,7 @@ app.use("/api/posts", postRoutes);
 
 app.use("/uploads", express.static("uploads"));
 
-// ✅ Error Handling Middleware for Multer
+// Multer error handler
 app.use((err, req, res, next) => {
   if (err.code === "LIMIT_FILE_SIZE") {
     return res.status(400).json({
@@ -58,11 +59,11 @@ app.use((err, req, res, next) => {
     .json({ message: "Something went wrong", error: err.message });
 });
 
-// Initialize WebSocket
+// WebSocket
 initializeSocket(server);
 
 // Start server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
