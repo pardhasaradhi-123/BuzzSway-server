@@ -16,9 +16,13 @@ const registerUser = async (req, res) => {
     await user.save();
 
     // ✅ Create token here too
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET || "supersecretkey",
+      {
+        expiresIn: "7d",
+      }
+    );
 
     res
       .cookie("token", token, {
@@ -48,9 +52,13 @@ const loginUser = async (req, res) => {
     if (!isMatch)
       return res.status(401).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET || "supersecretkey",
+      {
+        expiresIn: "7d",
+      }
+    );
 
     res
       .cookie("token", token, {
