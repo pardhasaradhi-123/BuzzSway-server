@@ -15,7 +15,24 @@ const registerUser = async (req, res) => {
     const user = new User({ username, email, password: hashedPassword });
     await user.save();
 
-    res.status(201).json({ message: "User registered successfully" });
+    // ✅ Create token here too
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    // ✅ Set token as HTTP-only cookie
+    res
+      .cookie("token", token, {
+        httpOnly: false,
+        secure: true, // set to true if using https
+        sameSite: "Lax", // or "None" for cross-site
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+      .status(201)
+      .json({
+        user: { id: user._id, username: user.username },
+        token, // ✅ frontend expects this!
+      });
   } catch (error) {
     res.status(500).json({ message: "Registration failed", error });
   }
