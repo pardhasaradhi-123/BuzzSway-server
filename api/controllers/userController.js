@@ -32,7 +32,7 @@ const searchUsers = async (req, res) => {
 
     const users = await User.find({
       username: { $regex: query, $options: "i" },
-    }).select("-password"); // Exclude passwords
+    }).select("-password");
 
     res.status(200).json(users);
   } catch (error) {
