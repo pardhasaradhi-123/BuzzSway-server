@@ -3,7 +3,7 @@ const Message = require("./api/models/Message"); // Adjust path if needed
 const initializeSocket = (server) => {
   const io = require("socket.io")(server, {
     cors: {
-      origin: "https://buzzsway.netlify.app", // ✅ Netlify frontend
+      origin: "https://buzzsway-50aaf.web.app", // ✅ Netlify frontend
       credentials: true,
     },
   });
