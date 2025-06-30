@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const initializeSocket = require("./socket");
 const cookieParser = require("cookie-parser");
+const path = require("path"); // ✅ Needed to resolve absolute path
 
 // Load env variables
 dotenv.config();
@@ -20,7 +21,7 @@ const server = http.createServer(app);
 app.use(cookieParser());
 app.use(
   cors({
-    origin: process.env.CLIENT_URL, // ✅ Use Netlify origin from .env
+    origin: process.env.CLIENT_URL, // ✅ Netlify or local frontend URL from .env
     credentials: true,
   })
 );
@@ -28,6 +29,9 @@ app.use(
 // Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// ✅ Serve static uploads folder correctly
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
 const authRoutes = require("./api/routes/authRoutes");
@@ -40,9 +44,7 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 
-app.use("/uploads", express.static("uploads"));
-
-// Multer error handler
+// ✅ Multer error handler
 app.use((err, req, res, next) => {
   if (err.code === "LIMIT_FILE_SIZE") {
     return res.status(400).json({
