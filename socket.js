@@ -3,11 +3,10 @@ const Message = require("./api/models/Message"); // Adjust path if needed
 const initializeSocket = (server) => {
   const io = require("socket.io")(server, {
     cors: {
-      origin: "http://localhost:3000", // ✅ Netlify frontend
+      origin: "https://buzzsway-50aaf.web.app", // ✅ Netlify frontend
       credentials: true,
     },
   });
-  // "https://buzzsway-50aaf.web.app",
 
   let onlineUsers = {}; // { username: socket.id }
 
