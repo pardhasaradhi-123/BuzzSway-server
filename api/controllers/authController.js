@@ -15,26 +15,23 @@ const registerUser = async (req, res) => {
     const user = new User({ username, email, password: hashedPassword });
     await user.save();
 
-    // ✅ Create token here too
     const token = jwt.sign(
       { id: user._id },
-      "supersecretkey" || process.env.JWT_SECRET,
-      {
-        expiresIn: "7d",
-      }
+      process.env.JWT_SECRET || "supersecretkey",
+      { expiresIn: "7d" }
     );
 
     res
       .cookie("token", token, {
-        httpOnly: true, // ✅ secure: JS can't read this cookie
-        secure: true, // ✅ only sends over HTTPS
-        sameSite: "None", // ✅ required for cross-site cookies (Netlify + Railway)
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        httpOnly: true, // secure from JS access
+        secure: true, // only over HTTPS
+        sameSite: "None", // ✅ required for cross-site cookies
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       })
       .status(201)
       .json({
         user: { id: user._id, username: user.username },
-        token, // ✅ frontend expects this!
+        token, // ✅ required by frontend
       });
   } catch (error) {
     res.status(500).json({ message: "Registration failed", error });
@@ -54,22 +51,22 @@ const loginUser = async (req, res) => {
 
     const token = jwt.sign(
       { id: user._id },
-      "supersecretkey" || process.env.JWT_SECRET,
-      {
-        expiresIn: "7d",
-      }
+      process.env.JWT_SECRET || "supersecretkey",
+      { expiresIn: "7d" }
     );
 
     res
       .cookie("token", token, {
-        httpOnly: true, // ✅ secure: JS can't read this cookie
-        secure: true, // ✅ only sends over HTTPS
-        sameSite: "None", // ✅ required for cross-site cookies (Netlify + Railway)
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       })
-
       .status(200)
-      .json({ user: { id: user._id, username: user.username } }); // optional token here
+      .json({
+        user: { id: user._id, username: user.username },
+        token, // ✅ sent so frontend can store it
+      });
   } catch (error) {
     res.status(500).json({ message: "Login failed", error });
   }
