@@ -84,12 +84,18 @@ const createPost = async (req, res) => {
       return res.status(400).json({ message: "Media file is required" });
     }
 
-    const mediaPath = `/uploads/${file.filename}`; // ✅ Store correct path
+    let mediaPath = file.path || `/uploads/${file.filename}`;
+
+    // ✅ Ensure path is relative (to avoid full URLs like http://localhost:5000/uploads/...)
+    if (mediaPath.startsWith("http://") || mediaPath.startsWith("https://")) {
+      const url = new URL(mediaPath);
+      mediaPath = url.pathname; // will give /uploads/filename
+    }
 
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    user.posts.unshift({ image: mediaPath, caption }); // using `image` for both image/video
+    user.posts.unshift({ image: mediaPath, caption });
     await user.save();
 
     res.status(201).json({ message: "Post uploaded successfully" });
